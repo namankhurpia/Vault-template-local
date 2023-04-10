@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: TransferSchedulerService
+  cloud:
+    vault:
+      kv:
+        enabled: true
+        profile-separator: '/'
+        default-context : TransferSchedulerService
+        profiles: mydata
+      scheme: http
+      token: hvs.CAESIEyQNoPNRX1n0lZ_RnrMyHnMR0G9dH8Vb_r48glGKusfGh4KHGh2cy5VdjlZS3ljSmxrQXVlWkVVSXRQNXJWT3Q
+      authentication: token
