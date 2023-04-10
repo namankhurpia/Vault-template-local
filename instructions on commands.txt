@@ -1,0 +1,160 @@
+Independent study
+
+Start vault server- 
+vault server --dev --dev-root-token-id="00000000-0000-0000-0000-000000000000"
+
+Doc - https://spring.io/guides/gs/vault-config/#initial
+
+
+Export first -
+
+export export VAULT_TOKEN="00000000-0000-0000-0000-000000000000"
+export VAULT_ADDR="http://127.0.0.1:8200"
+
+Vault put- 
+
+vault kv put secret/SpringCloudConfigServerApplication onedatashare.username=user_naman onedatashare.password=pass_naman
+
+Delete -
+vault kv delete secret/gs-vault-config
+
+Get-
+vault kv get secret/SpringCloudConfigServerApplication
+
+
+
+Commands to add all properties -
+
+
+
+vault kv put secret/SpringCloudConfigServerApplication onedatashare.username=user_naman onedatashare.password=pass_naman
+vault kv put secret/SpringCloudConfigServerApplication onedatashare.username=user_naman onedatashare.password=pass_naman
+
+
+PROD- vault login  vault login -method=token -address='<url>' <roottoken>
+
+//to run
+vault token create -policy=transfer-scheduler-policy
+__________________________________________________________
+Token created -  (base) namankhurpia@Namans-MacBook-Pro Desktop % vault token create -policy=transfer-scheduler-policy
+Key                  Value
+---                  -----
+token               
+<token here>
+token_accessor       some key
+token_duration       768h
+token_renewable      true
+token_policies       ["default" "transfer-scheduler-policy"]
+identity_policies    []
+policies             ["default" "transfer-scheduler-policy"]  __________________________________________________________
+
+Enable a kv engine by name-
+
+vault secrets enable -path=TransferSchedulerService kv
+__________________________________________________________
+
+Add data in transferschedulerservice
+
+vault kv put TransferSchedulerService/mydata test=test  
+
+_______________________________________
+
+Vault policy and token policies-
+
+vault policy list
+vault policy read endpoint-cred-policy
+____________________________________________________
+
+Vault export
+
+export VAULT_ADDR="<url>"
+
+_____________________________________________________
+
+
+
+FOR USING NEW TOKEN - transfer scheduler token
+
+Login- 
+
+vault login -method=token -address='<url>' <token>
+
+To add -
+
+vault kv put TransferSchedulerService/mytest test=test5  
+
+Or
+
+vault kv put TransferSchedulerService/mytest lnews.username=lnewsusr lnews.password=lnewspwd2
+
+To get-
+
+vault kv get TransferSchedulerService/mytest
+___________________________________________________
+
+
+My prod yaml
+
+spring:
+  application:
+    name: TransferSchedulerService
+  cloud:
+    vault:
+      kv:
+        enabled: true
+        backend: secret
+        profile-separator: '/'
+        default-context : TransferSchedulerService
+        profiles: mydata
+      scheme: https
+      host: vault.onedatashare.org/
+      token: <token>
+
+
+_______local
+
+(base) namankhurpia@Namans-MBP ~ % vault token create -policy=transfer-scheduler-policy
+Key                  Value
+---                  -----
+token                <local token>
+token_accessor       some key
+token_duration       768h
+token_renewable      true
+token_policies       ["default" "transfer-scheduler-policy"]
+identity_policies    []
+policies             ["default" "transfer-scheduler-policy"]
+(base) namankhurpia@Namans-MBP ~ % 
+
+
+
+(base) namankhurpia@Namans-MBP ~ % vault token create -policy=transfer-scheduler-policy
+Key                  Value
+---                  -----
+token                <token>
+token_accessor       some key
+token_duration       768h
+token_renewable      true
+token_policies       ["default" "transfer-scheduler-policy"]
+identity_policies    []
+policies             ["default" "transfer-scheduler-policy"]
+(base) namankhurpia@Namans-MBP ~ % 
+
+
+______________
+
+Working in local
+
+spring:
+  application:
+    name: TransferSchedulerService
+  cloud:
+    vault:
+      kv:
+        enabled: true
+        profile-separator: '/'
+        default-context : TransferSchedulerService
+        profiles: mydata
+      scheme: http
+      token: <token>
+      authentication: token
+
